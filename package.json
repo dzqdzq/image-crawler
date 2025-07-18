@@ -1,13 +1,12 @@
 {
-  "name": "image-crawler",
+  "name": "image-crawler2",
   "version": "2.0.0",
   "description": "爬取网站的图片",
   "main": "index.js",
   "bin": {
     "image-crawler": "./bin/cmd.js"
   },
-  "scripts": {
-  },
+  "scripts": {},
   "keywords": [
     "image-crawler",
     "images",
@@ -21,15 +20,16 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/powerful-image-crawler.git"
+    "url": "https://github.com/dzqdzq/image-crawler.git"
   },
   "engines": {
     "node": ">=18.0.0"
   },
   "dependencies": {
-    "crawlee": "^3.7.0",
-    "playwright": "^1.40.0",
+    "axios": "^1.6.0",
     "commander": "^11.0.0",
-    "axios": "^1.6.0"
+    "crawlee": "^3.7.0",
+    "mime-types": "^3.0.1",
+    "playwright": "^1.40.0"
   }
 }

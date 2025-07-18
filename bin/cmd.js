@@ -16,7 +16,7 @@ program
 program
   .argument('<url>', '网站URL')
   .argument('[output-dir]', '图片保存目录', './images')
-  .option('-d, --depth <number>', '爬取深度', '3')
+  .option('-d, --depth <number>', '爬取深度', '4')
   .option('--screenshot', '同时保存页面截图')
   .option('--no-headless', '显示浏览器窗口（调试用）')
   .option('-q, --quiet', '静默模式，减少输出信息')
@@ -42,7 +42,7 @@ program
       
       // 固定的最佳实践设置
       downloadImages: true,           // 默认下载图片
-      maxConcurrent: 3,              // 合理的并发数
+      maxConcurrent: 4,              // 合理的并发数
       timeout: 30000,                // 30秒超时
       headless: options.headless,    // 默认无头模式
       outputFormat: 'json',          // JSON报告格式
@@ -96,8 +96,8 @@ program
   .command('advanced')
   .description('高级模式 - 详细配置所有选项')
   .argument('<url>', '网站URL')
-  .option('-d, --depth <number>', '最大爬取深度', '3')
-  .option('-c, --concurrent <number>', '并发数', '3')
+  .option('-d, --depth <number>', '最大爬取深度', '4')
+  .option('-c, --concurrent <number>', '并发数', '4')
   .option('-o, --output <path>', '输出文件名', 'advanced-report.json')
   .option('-f, --format <type>', '输出格式 (json|csv|txt)', 'json')
   .option('-t, --timeout <number>', '页面超时时间(毫秒)', '30000')
@@ -178,7 +178,7 @@ program
   .action(async (options) => {
     const exampleConfig = {
       maxDepth: 4,
-      maxConcurrent: 3,
+      maxConcurrent: 4,
       timeout: 30000,
       downloadImages: true,
       captureScreenshots: false,
@@ -218,7 +218,7 @@ program.addHelpText('afterAll', `
     image-crawler init                                   # 生成配置模板
     image-crawler advanced https://example.com --config crawler-config.json
 
-注意: 默认包含所有类型图片（包括Base64），深度为3层，使用无头浏览器模式
+注意: 默认包含所有类型图片（包括Base64），深度为4层，使用无头浏览器模式
 `);
 
 program.parse(process.argv);

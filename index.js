@@ -1,6 +1,7 @@
 const fs = require('fs').promises;
 const path = require('path');
 const crypto = require('crypto');
+const mimeTypes = require('mime-types');
 const { PlaywrightCrawler } = require('crawlee');
 const axios = require('axios');
 
@@ -552,52 +553,83 @@ async function crawlImages(startUrl, options = {}) {
       const urlObj = new URL(imageUrl);
       let pathname = urlObj.pathname;
       
-      if (pathname.endsWith('/') || !path.extname(pathname)) {
-        const ext = getFileExtension(imageUrl) || 'png';
-        pathname = pathname.replace(/\/$/, '') + `.${ext}`;
+      // 首先用原始路径生成基础文件名（不考虑扩展名）
+      pathname = pathname.replace(/^\//, '');
+      
+      // 先请求图片获取 content-type
+      const response = await axios({
+        method: 'GET',
+        url: imageUrl,
+        responseType: 'stream',
+        timeout: 30000,
+        headers: {
+          'User-Agent': userAgent,
+          'Referer': pageUrl
+        }
+      });
+
+      // 根据 content-type 确定正确的扩展名
+      const contentType = response.headers['content-type'];
+      let correctExtension = null;
+      
+      if (contentType) {
+        correctExtension = mimeTypes.extension(contentType);
       }
       
-      pathname = pathname.replace(/^\//, '');
-      const filename = pathname;
-      const filepath = path.join(outputDir, filename);
+      // 如果无法从 content-type 获取扩展名，尝试从 URL 获取
+      if (!correctExtension) {
+        correctExtension = getFileExtension(imageUrl) || 'png';
+      }
+      
+      // 生成最终文件名：如果原始路径没有扩展名或扩展名不正确，则添加/替换
+      let finalFilename = pathname;
+      const originalExtension = path.extname(pathname).replace('.', '');
+      
+      if (!originalExtension || originalExtension !== correctExtension) {
+        // 移除原有扩展名（如果有）并添加正确的扩展名
+        const nameWithoutExt = pathname.replace(path.extname(pathname), '');
+        finalFilename = `${nameWithoutExt}.${correctExtension}`;
+      }
+      
+      const filepath = path.join(outputDir, finalFilename);
 
+      // 检查文件是否已存在
       try {
         await fs.access(filepath);
-        return { success: true, filename, filepath, skipped: true };
-      } catch {
-        const dir = path.dirname(filepath);
-        await fs.mkdir(dir, { recursive: true });
-
-        const response = await axios({
-          method: 'GET',
-          url: imageUrl,
-          responseType: 'stream',
-          timeout: 30000,
-          headers: {
-            'User-Agent': userAgent,
-            'Referer': pageUrl
-          }
-        });
-
-        const writer = require('fs').createWriteStream(filepath);
-        response.data.pipe(writer);
-
-        await new Promise((resolve, reject) => {
-          writer.on('finish', resolve);
-          writer.on('error', reject);
-        });
-
-        const stats = await fs.stat(filepath);
-        return {
-          success: true,
-          filename,
-          filepath,
-          size: stats.size,
-          type: imageInfo.type,
-          contentType: response.headers['content-type'],
-          skipped: false
+        return { 
+          success: true, 
+          filename: finalFilename, 
+          filepath, 
+          skipped: true,
+          contentType
         };
+      } catch {
+        // 文件不存在，继续下载
       }
+
+      // 确保目录存在
+      const dir = path.dirname(filepath);
+      await fs.mkdir(dir, { recursive: true });
+
+      // 保存文件
+      const writer = require('fs').createWriteStream(filepath);
+      response.data.pipe(writer);
+
+      await new Promise((resolve, reject) => {
+        writer.on('finish', resolve);
+        writer.on('error', reject);
+      });
+
+      const stats = await fs.stat(filepath);
+      return {
+        success: true,
+        filename: finalFilename,
+        filepath,
+        size: stats.size,
+        type: imageInfo.type,
+        contentType,
+        skipped: false
+      };
     } catch (error) {
       return { success: false, error: error.message };
     }
@@ -731,10 +763,8 @@ async function saveResults(images, outputFile, format) {
   await fs.writeFile(outputFile, content, 'utf-8');
 }
 
-// 导出函数
 module.exports = crawlImages;
 
-// 如果直接运行此文件，执行命令行模式
 if (require.main === module) {
   (async () => {
     const startUrl = 'https://eazegames.com/solitaire';
