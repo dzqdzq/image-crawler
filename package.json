@@ -1,6 +1,6 @@
 {
   "name": "image-crawler2",
-  "version": "2.0.0",
+  "version": "2.0.4",
   "description": "爬取网站的图片",
   "main": "index.js",
   "bin": {

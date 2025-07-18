@@ -4,13 +4,14 @@ const { Command } = require('commander');
 const crawlImages = require('../index');
 const fs = require('fs').promises;
 const path = require('path');
+const { version } = require('../package.json');
 
 const program = new Command();
 
 program
   .name('image-crawler')
   .description('强大的图片爬虫工具 - 一键下载网站所有图片')
-  .version('2.0.0');
+  .version(version);
 
 // 主命令 - 超级简化版本
 program
@@ -91,115 +92,6 @@ program
     }
   });
 
-// 高级模式 - 为需要详细控制的用户保留
-program
-  .command('advanced')
-  .description('高级模式 - 详细配置所有选项')
-  .argument('<url>', '网站URL')
-  .option('-d, --depth <number>', '最大爬取深度', '4')
-  .option('-c, --concurrent <number>', '并发数', '4')
-  .option('-o, --output <path>', '输出文件名', 'advanced-report.json')
-  .option('-f, --format <type>', '输出格式 (json|csv|txt)', 'json')
-  .option('-t, --timeout <number>', '页面超时时间(毫秒)', '30000')
-  .option('--output-dir <path>', '图片下载目录', './images')
-  .option('--no-download', '只收集URL，不下载图片')
-  .option('--no-headless', '显示浏览器窗口')
-  .option('--screenshot', '捕获页面截图')
-  .option('--no-wait-images', '不等待图片加载')
-  .option('--no-lazy-load', '不处理懒加载')
-  .option('--no-backgrounds', '不包含CSS背景图片')
-  .option('--hidden-images', '包含隐藏图片')
-  .option('--filter <extensions>', '文件类型过滤 (用逗号分隔)', '')
-  .option('--min-size <number>', '最小文件大小(字节)', '0')
-  .option('--exclude-data-uri', '排除Base64图片')
-  .option('--config <path>', '从JSON配置文件加载选项')
-  .action(async (url, options) => {
-    let config = {};
-    
-    // 从配置文件加载
-    if (options.config) {
-      try {
-        const configFile = await fs.readFile(options.config, 'utf-8');
-        config = JSON.parse(configFile);
-        console.log(`📋 从配置文件加载选项: ${options.config}`);
-      } catch (error) {
-        console.error(`❌ 配置文件加载失败: ${error.message}`);
-        process.exit(1);
-      }
-    }
-    
-    const crawlerOptions = {
-      maxDepth: parseInt(options.depth),
-      maxConcurrent: parseInt(options.concurrent),
-      outputFile: options.output,
-      outputFormat: options.format,
-      timeout: parseInt(options.timeout),
-      headless: options.headless,
-      downloadImages: options.download,
-      outputDir: options.outputDir,
-      captureScreenshots: options.screenshot,
-      waitForImages: options.waitImages,
-      detectLazyLoad: options.lazyLoad,
-      includeBackgrounds: options.backgrounds,
-      includeHiddenImages: options.hiddenImages,
-      minSize: parseInt(options.minSize),
-      excludeDataUri: options.excludeDataUri,
-      ...config
-    };
-
-    // 处理文件过滤器
-    if (options.filter) {
-      crawlerOptions.imageFilter = options.filter.split(',').map(ext => ext.trim());
-    }
-
-    console.log('🚀 启动高级图片爬虫');
-    console.log(`📋 配置详情:`);
-    console.log(JSON.stringify(crawlerOptions, null, 2));
-    
-    try {
-      const result = await crawlImages(url, crawlerOptions);
-      console.log('✨ 高级爬取完成');
-      if (result.stats) {
-        console.log(`📊 统计信息:`);
-        console.log(JSON.stringify(result.stats, null, 2));
-      }
-    } catch (error) {
-      console.error('❌ 高级爬取失败:', error.message);
-      process.exit(1);
-    }
-  });
-
-
-// 示例配置生成
-program
-  .command('init')
-  .description('生成示例配置文件')
-  .option('-o, --output <path>', '配置文件输出路径', 'crawler-config.json')
-  .action(async (options) => {
-    const exampleConfig = {
-      maxDepth: 4,
-      maxConcurrent: 4,
-      timeout: 30000,
-      downloadImages: true,
-      captureScreenshots: false,
-      waitForImages: true,
-      detectLazyLoad: true,
-      includeBackgrounds: true,
-      includeHiddenImages: false,
-      excludeDataUri: false,
-      imageFilter: ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'],
-      minSize: 1024
-    };
-    
-    try {
-      await fs.writeFile(options.output, JSON.stringify(exampleConfig, null, 2));
-      console.log(`✅ 示例配置文件已生成: ${path.resolve(options.output)}`);
-      console.log('📝 编辑此文件后可用于 advanced --config 选项');
-    } catch (error) {
-      console.error('❌ 配置文件生成失败:', error.message);
-      process.exit(1);
-    }
-  });
 
 // 帮助信息
 program.addHelpText('afterAll', `
@@ -207,16 +99,7 @@ program.addHelpText('afterAll', `
 使用示例:
   
   基本使用 (推荐):
-    image-crawler https://example.com                    # 下载到 ./images
-    image-crawler https://example.com ./my-pics         # 下载到 ./my-pics
-    image-crawler https://example.com --screenshot      # 同时保存截图
-  
-  高级控制:
-    image-crawler advanced https://example.com --depth 5 --filter jpg,png
-  
-  配置文件:
-    image-crawler init                                   # 生成配置模板
-    image-crawler advanced https://example.com --config crawler-config.json
+    image-crawler https://example.com  my-pics # 下载到 ./my-pics
 
 注意: 默认包含所有类型图片（包括Base64），深度为4层，使用无头浏览器模式
 `);
