@@ -43,9 +43,14 @@ async function crawlImages(startUrl, options = {}) {
     }
   }
 
+  // 设置Crawlee存储目录到用户指定的输出目录中
+  const crawleeStorageDir = path.join(outputDir, '.crawlee-storage');
+  process.env.CRAWLEE_STORAGE_DIR = crawleeStorageDir;
+
   console.log(`🚀 启动强大图片爬虫 (Playwright Browser 模式)`);
   console.log(`📋 配置: maxDepth=${maxDepth}, 并发=${maxConcurrent}, 超时=${timeout}ms`);
   console.log(`🎯 目标: ${startUrl}`);
+  console.log(`📁 输出目录: ${outputDir}`);
 
   // 创建PlaywrightCrawler实例
   const crawler = new PlaywrightCrawler({
@@ -661,8 +666,10 @@ async function crawlImages(startUrl, options = {}) {
         screenshots: screenshotUrls
       };
 
-      await saveResults([report], outputFile, 'json');
-      console.log(`\n📄 爬取报告已保存到: ${path.resolve(outputFile)}`);
+      // 将报告文件保存到输出目录中
+      const reportPath = path.join(outputDir, outputFile);
+      await saveResults([report], reportPath, 'json');
+      console.log(`\n📄 爬取报告已保存到: ${path.resolve(reportPath)}`);
     }
 
     return { downloadedImages, failedDownloads, stats: downloadStats, screenshots: screenshotUrls };
@@ -683,8 +690,16 @@ async function crawlImages(startUrl, options = {}) {
       console.log(`📸 页面截图: ${screenshotUrls.length} 个`);
     }
 
-    await saveResults(uniqueImages, outputFile, outputFormat);
-    console.log(`\n📄 结果已保存到: ${path.resolve(outputFile)}`);
+    // 在下载模式下，报告文件也保存到输出目录中
+    let finalOutputPath = outputFile;
+    if (downloadImages || captureScreenshots) {
+      // 确保输出目录存在
+      await fs.mkdir(outputDir, { recursive: true });
+      finalOutputPath = path.join(outputDir, outputFile);
+    }
+    
+    await saveResults(uniqueImages, finalOutputPath, outputFormat);
+    console.log(`\n📄 结果已保存到: ${path.resolve(finalOutputPath)}`);
 
     return { images: uniqueImages, screenshots: screenshotUrls };
   }
@@ -731,7 +746,7 @@ if (require.main === module) {
     // 使用强大的浏览器模式
     await crawlImages(startUrl, { 
       maxDepth, 
-      outputFile: 'playwright_report.json', 
+      outputFile: 'playwright_report11.json', 
       downloadImages: true, 
       outputDir,
       captureScreenshots: true,

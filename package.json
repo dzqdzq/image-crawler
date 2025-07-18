@@ -4,16 +4,17 @@
   "description": "爬取网站的图片",
   "main": "index.js",
   "bin": {
-    "image-crawler": "./bin/cmd.js",
-    "pic-crawler": "./bin/cmd.js"
+    "image-crawler": "./bin/cmd.js"
   },
   "scripts": {
   },
   "keywords": [
     "image-crawler",
-    "pic-crawler",
+    "images",
     "crawlee",
     "图片爬虫",
+    "图片",
+    "嗅探",
     "dzqdzq"
   ],
   "author": "dzqdzq",
