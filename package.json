@@ -1,6 +1,6 @@
 {
   "name": "web-image-crawler",
-  "version": "2.0.5",
+  "version": "2.0.6",
   "description": "爬取网站的图片",
   "main": "index.js",
   "bin": {
