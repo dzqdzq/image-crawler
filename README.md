@@ -1,77 +1,103 @@
 # 🕷️ Image Crawler
 
-高级网站图片爬虫工具 - 深度抓取网页中的所有图片资源
+Advanced web image crawler tool - Deep crawling of all image resources on web pages
 
-## ✨ 特性
+[English](README.md) | [中文](README.zh-CN.md)
 
-- 📊 **深度爬取**: 递归爬取同域名下的子页面，自动URL去重
+## ✨ Features
 
+- 📊 **Deep Crawling**: Recursively crawl sub-pages under the same domain with automatic URL deduplication
+- 🎯 **Smart Detection**: Automatically identify and extract various image formats
+- 🚀 **High Performance**: Multi-threaded concurrent processing for efficient crawling
+- 🔧 **Flexible Configuration**: Customizable crawling depth, filters, and output options
+- 💾 **Organized Storage**: Automatically organize downloaded images by domain and page structure
 
-## 🛠️ 安装
+## 🛠️ Installation
 
-### 作为 CLI 工具安装
+### Install as CLI Tool
 
 ```bash
 npx playwright install
-npm install -g image-crawler2
+npm install -g web-image-crawler
 ```
 
-**注意**: 
-- Playwright 浏览器下载包约 300MB，请确保网络连接稳定
-- 支持 Chrome/Chromium、Firefox、Safari(WebKit) 多种浏览器引擎
-- 推荐使用轻量级模式，覆盖90%的使用场景且无需下载浏览器
+**Note**: 
+- Playwright browser download package is about 300MB, please ensure stable network connection
+- Supports multiple browser engines: Chrome/Chromium, Firefox, Safari(WebKit)
+- Recommended to use lightweight mode, covering 90% of use cases without downloading browsers
 
-## 📖 CLI 使用方法
+## 📖 CLI Usage
 
-### 基础命令
+### Basic Command
 
 ```bash
-image-crawler <url> [选项]
+image-crawler <url> [options]
 ```
 
-### 使用示例
+### Usage Examples
 
 ```bash
+# Basic crawling
 image-crawler https://example.com output_path
+
+# Crawl with specific depth
+image-crawler https://example.com output_path --depth 3
+
+# Filter by image size
+image-crawler https://example.com output_path --min-size 10000
+
+# Use specific browser
+image-crawler https://example.com output_path --browser firefox
 ```
 
-### 查看帮助
+### View Help
 
 ```bash
-# 查看帮助信息
+# View help information
 image-crawler --help
 ```
 
-## ⚠️ 注意事项
+## ⚙️ Configuration Options
 
-1. **遵守 robots.txt**: 使用前请检查目标网站的爬虫政策
-2. **合理控制频率**: 避免对目标服务器造成过大压力
-3. **版权问题**: 请遵守相关法律法规，尊重版权
-4. **网络环境**: 某些网站可能需要代理或特殊配置
+| Option | Description | Default |
+|--------|-------------|---------|
+| `--depth` | Maximum crawling depth | 2 |
+| `--min-size` | Minimum image size (bytes) | 0 |
+| `--max-size` | Maximum image size (bytes) | ∞ |
+| `--browser` | Browser engine (chrome/firefox/safari) | chrome |
+| `--timeout` | Page load timeout (ms) | 30000 |
+| `--concurrency` | Number of concurrent requests | 5 |
 
-## 🛡️ 法律声明
+## ⚠️ Important Notes
 
-本工具仅供学习和研究使用，用户在使用时应：
+1. **Respect robots.txt**: Please check the target website's crawling policy before use
+2. **Reasonable Frequency Control**: Avoid putting excessive pressure on target servers
+3. **Copyright Issues**: Please comply with relevant laws and regulations, respect copyright
+4. **Network Environment**: Some websites may require proxy or special configuration
 
-- 遵守目标网站的使用条款和robots.txt协议
-- 不要用于商业用途或侵犯他人权益
-- 合理控制爬取频率，避免对服务器造成压力
-- 尊重版权，不要用于侵权用途
+## 🛡️ Legal Disclaimer
 
-## 🤝 贡献
+This tool is for learning and research purposes only. Users should:
 
-欢迎提交 Issue 和 Pull Request！
+- Comply with the target website's terms of use and robots.txt protocol
+- Not use for commercial purposes or infringe on others' rights
+- Reasonably control crawling frequency to avoid server pressure
+- Respect copyright and not use for infringing purposes
 
-## 📄 许可证
+## 🤝 Contributing
 
-MIT License - 详见 [LICENSE](LICENSE) 文件
+Welcome to submit Issues and Pull Requests!
 
-## 🔗 相关链接
+## 📄 License
 
-- [GitHub 仓库](https://github.com/dzqdzq/image-crawler)
-- [NPM 包页面](https://www.npmjs.com/package/image-crawler2)
-- [问题反馈](https://github.com/dzqdzq/image-crawler/issues)
+MIT License - See [LICENSE](LICENSE) file for details
+
+## 🔗 Related Links
+
+- [GitHub Repository](https://github.com/dzqdzq/image-crawler)
+- [NPM Package Page](https://www.npmjs.com/package/image-crawler2)
+- [Issue Feedback](https://github.com/dzqdzq/image-crawler/issues)
 
 ---
 
-⭐ 如果这个工具对你有帮助，请给个 Star! 
+⭐ If this tool helps you, please give it a Star! 

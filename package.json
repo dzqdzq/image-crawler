@@ -1,19 +1,25 @@
 {
-  "name": "image-crawler2",
-  "version": "2.0.4",
+  "name": "web-image-crawler",
+  "version": "2.0.5",
   "description": "爬取网站的图片",
   "main": "index.js",
   "bin": {
-    "image-crawler": "./bin/cmd.js"
+    "image-spider": "./bin/cmd.js",
+    "image-crawler": "./bin/cmd.js",
+    "web-image-crawler": "./bin/cmd.js"
   },
   "scripts": {},
   "keywords": [
     "image-crawler",
+    "image-spider",
+    "crawler",
+    "web",
     "images",
     "crawlee",
-    "图片爬虫",
+    "爬虫",
     "图片",
     "嗅探",
+    "抓取",
     "dzqdzq"
   ],
   "author": "dzqdzq",
